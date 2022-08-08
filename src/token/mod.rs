@@ -3,6 +3,11 @@ use crate::{
     value::{FloatType, IntType},
 };
 
+#[cfg(feature = "wasm")]
+use scale_info::prelude::{ format, string::{ String, ToString }};
+#[cfg(feature = "wasm")]
+use sp_std::vec::Vec;
+
 mod display;
 
 #[derive(Clone, PartialEq, Debug)]
@@ -13,7 +18,7 @@ pub enum Token {
     Star,
     Slash,
     Percent,
-    Hat,
+    //Hat, // TODO
 
     // Logic
     Eq,
@@ -71,7 +76,7 @@ pub enum PartialToken {
     /// A percent character '%'.
     Percent,
     /// A hat character '^'.
-    Hat,
+    // Hat, // TODO
     /// A whitespace character, e.g. ' '.
     Whitespace,
     /// An equal-to character '='.
@@ -96,7 +101,7 @@ fn char_to_partial_token(c: char) -> PartialToken {
         '*' => PartialToken::Star,
         '/' => PartialToken::Slash,
         '%' => PartialToken::Percent,
-        '^' => PartialToken::Hat,
+        // '^' => PartialToken::Hat, // TODO
 
         '(' => PartialToken::Token(Token::LBrace),
         ')' => PartialToken::Token(Token::RBrace),
@@ -130,7 +135,7 @@ impl Token {
             Token::Star => false,
             Token::Slash => false,
             Token::Percent => false,
-            Token::Hat => false,
+            // Token::Hat => false, // TODO
 
             Token::Eq => false,
             Token::Neq => false,
@@ -174,7 +179,7 @@ impl Token {
             Token::Star => false,
             Token::Slash => false,
             Token::Percent => false,
-            Token::Hat => false,
+            // Token::Hat => false, // TODO
 
             Token::Eq => false,
             Token::Neq => false,
@@ -339,6 +344,7 @@ fn partial_tokens_to_tokens(mut tokens: &[PartialToken]) -> EvalexprResult<Vec<T
                         Some(Token::Percent)
                     },
                 },
+                /* TODO
                 PartialToken::Hat => match second {
                     Some(PartialToken::Eq) => Some(Token::HatAssign),
                     _ => {
@@ -346,6 +352,7 @@ fn partial_tokens_to_tokens(mut tokens: &[PartialToken]) -> EvalexprResult<Vec<T
                         Some(Token::Hat)
                     },
                 },
+                */
                 PartialToken::Literal(literal) => {
                     cutoff = 1;
                     if let Ok(number) = literal.parse::<IntType>() {

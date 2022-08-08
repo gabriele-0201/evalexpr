@@ -1,4 +1,8 @@
+#[cfg(not(feature = "wasm"))]
 use std::fmt;
+
+#[cfg(feature = "wasm")]
+use sp_std::fmt;
 
 use crate::EvalexprError;
 

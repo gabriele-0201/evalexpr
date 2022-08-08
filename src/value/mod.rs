@@ -1,5 +1,12 @@
 use crate::error::{EvalexprError, EvalexprResult};
+
+#[cfg(not(feature = "wasm"))]
 use std::convert::TryFrom;
+
+#[cfg(feature = "wasm")]
+use sp_std::{ convert::TryFrom, vec::Vec };
+#[cfg(feature = "wasm")]
+use scale_info::prelude::string::{ String, ToString };
 
 mod display;
 pub mod value_type;

@@ -5,7 +5,14 @@ use crate::{
     value::{FloatType, IntType},
     EvalexprError, Function, Value, ValueType,
 };
+
+#[cfg(not(feature = "wasm"))]
 use std::ops::{BitAnd, BitOr, BitXor, Not, Shl, Shr};
+
+#[cfg(feature = "wasm")]
+use sp_std::{vec, ops::{BitAnd, BitOr, BitXor, Not, Shl, Shr}};
+#[cfg(feature = "wasm")]
+use scale_info::prelude::string::ToString;
 
 macro_rules! simple_math {
     ($func:ident) => {
@@ -47,6 +54,7 @@ macro_rules! int_function {
 
 pub fn builtin_function(identifier: &str) -> Option<Function> {
     match identifier {
+        /* TODO find a solution
         // Log
         "math::ln" => simple_math!(ln),
         "math::log" => simple_math!(log, 2),
@@ -82,6 +90,7 @@ pub fn builtin_function(identifier: &str) -> Option<Function> {
         "floor" => simple_math!(floor),
         "round" => simple_math!(round),
         "ceil" => simple_math!(ceil),
+        */
         // Float special values
         "math::is_nan" => float_is(f64::is_nan),
         "math::is_finite" => float_is(f64::is_finite),

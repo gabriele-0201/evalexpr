@@ -4,7 +4,23 @@
 //! This crate implements two basic variants, the `EmptyContext`, that returns `None` for each identifier and cannot be manipulated, and the `HashMapContext`, that stores its mappings in hash maps.
 //! The HashMapContext is type-safe and returns an error if the user tries to assign a value of a different type than before to an identifier.
 
-use std::{collections::HashMap, iter};
+#[cfg(not(feature = "wasm"))]
+use std::{
+    collections::HashMap, 
+    collections::hash_map::{ Keys, Iter}, 
+    iter, 
+    iter::Map
+};
+
+#[cfg(feature = "wasm")]
+use sp_std::{
+    collections::btree_map::BTreeMap, 
+    collections::btree_map::{ Keys, Iter }, 
+    iter, 
+    iter::Map
+};
+#[cfg(feature = "wasm")]
+use scale_info::prelude::string::{ String, ToString };
 
 use crate::{
     function::Function,
@@ -102,9 +118,20 @@ impl<'a> IterateVariablesContext<'a> for EmptyContext {
 #[derive(Clone, Debug, Default)]
 #[cfg_attr(feature = "serde_support", derive(Serialize, Deserialize))]
 pub struct HashMapContext {
+    #[cfg(not(feature = "wasm"))]
     variables: HashMap<String, Value>,
+
+    #[cfg(feature = "wasm")]
+    variables: BTreeMap<String, Value>,
+
+    // TODO not sure this is working
+    #[cfg(not(feature = "wasm"))]
     #[cfg_attr(feature = "serde_support", serde(skip))]
     functions: HashMap<String, Function>,
+
+    #[cfg(feature = "wasm")]
+    #[cfg_attr(feature = "serde_support", serde(skip))]
+    functions: BTreeMap<String, Function>,
 }
 
 impl HashMapContext {
@@ -155,12 +182,12 @@ impl ContextWithMutableFunctions for HashMapContext {
 }
 
 impl<'a> IterateVariablesContext<'a> for HashMapContext {
-    type VariableIterator = std::iter::Map<
-        std::collections::hash_map::Iter<'a, String, Value>,
+    type VariableIterator = Map<
+        Iter<'a, String, Value>,
         fn((&String, &Value)) -> (String, Value),
     >;
     type VariableNameIterator =
-        std::iter::Cloned<std::collections::hash_map::Keys<'a, String, Value>>;
+        iter::Cloned<Keys<'a, String, Value>>;
 
     fn iter_variables(&'a self) -> Self::VariableIterator {
         self.variables

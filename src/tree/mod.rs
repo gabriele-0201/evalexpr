@@ -9,7 +9,14 @@ use crate::{
     operator::*,
     value::Value,
 };
+
+#[cfg(not(feature = "wasm"))]
 use std::mem;
+
+#[cfg(feature = "wasm")]
+use sp_std::{ mem, vec, vec::Vec };
+#[cfg(feature = "wasm")]
+use scale_info::prelude::string::String;
 
 // Exclude display module from coverage, as it prints not well-defined prefix notation.
 #[cfg(not(tarpaulin_include))]
@@ -621,7 +628,7 @@ pub(crate) fn tokens_to_operator_tree(tokens: Vec<Token>) -> EvalexprResult<Node
             Token::Star => Some(Node::new(Operator::Mul)),
             Token::Slash => Some(Node::new(Operator::Div)),
             Token::Percent => Some(Node::new(Operator::Mod)),
-            Token::Hat => Some(Node::new(Operator::Exp)),
+            // Token::Hat => Some(Node::new(Operator::Exp)), TODO
 
             Token::Eq => Some(Node::new(Operator::Eq)),
             Token::Neq => Some(Node::new(Operator::Neq)),

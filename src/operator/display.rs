@@ -1,6 +1,10 @@
 #![cfg(not(tarpaulin_include))]
 
+#[cfg(not(feature = "wasm"))]
 use std::fmt::{Display, Error, Formatter};
+
+#[cfg(feature = "wasm")]
+use sp_std::fmt::{Display, Error, Formatter};
 
 use crate::operator::*;
 

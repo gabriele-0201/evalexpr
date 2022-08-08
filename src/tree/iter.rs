@@ -1,5 +1,10 @@
 use crate::Node;
+
+#[cfg(not(feature = "wasm"))]
 use std::slice::Iter;
+
+#[cfg(feature = "wasm")]
+use sp_std::{ vec, vec::Vec, slice::Iter };
 
 /// An iterator that traverses an operator tree in pre-order.
 pub struct NodeIter<'a> {

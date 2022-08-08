@@ -9,6 +9,11 @@ use crate::{token::PartialToken, value::value_type::ValueType};
 
 use crate::{operator::Operator, value::Value};
 
+#[cfg(feature = "wasm")]
+use sp_std::vec::Vec;
+#[cfg(feature = "wasm")]
+use scale_info::prelude::string::String;
+
 // Exclude error display code from test coverage, as the code does not make sense to test.
 #[cfg(not(tarpaulin_include))]
 mod display;
@@ -362,7 +367,12 @@ pub fn expect_number_or_string(actual: &Value) -> EvalexprResult<()> {
     }
 }
 
+#[cfg(not(feature = "wasm"))]
 impl std::error::Error for EvalexprError {}
+
+// TODO check if this is needed
+//#[cfg(feature = "wasm")]
+//impl sp_std::error::Error for EvalexprError {}
 
 /// Standard result type used by this crate.
 pub type EvalexprResult<T> = Result<T, EvalexprError>;

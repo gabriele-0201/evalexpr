@@ -3,6 +3,9 @@ use crate::{
     EvalexprResult, FloatType, HashMapContext, IntType, Node, Value, EMPTY_VALUE,
 };
 
+#[cfg(feature = "wasm")]
+use scale_info::prelude::string::String;
+
 /// Evaluate the given expression string.
 ///
 /// # Examples

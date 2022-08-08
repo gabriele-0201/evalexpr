@@ -1,7 +1,14 @@
 use crate::function::builtin::builtin_function;
 
 use crate::{context::Context, error::*, value::Value, ContextWithMutableVariables};
+
+#[cfg(not(feature = "wasm"))]
 use std::borrow::Borrow;
+
+#[cfg(feature = "wasm")]
+use sp_std::{ vec, vec::Vec, borrow::Borrow };
+#[cfg(feature = "wasm")]
+use scale_info::prelude::string::String;
 
 mod display;
 
@@ -25,7 +32,7 @@ pub enum Operator {
     /// A binary modulo operator.
     Mod,
     /// A binary exponentiation operator.
-    Exp,
+    //Exp, // TODO
 
     /// A binary equality comparator.
     Eq,
@@ -119,7 +126,7 @@ impl Operator {
             Add | Sub => 95,
             Neg => 110,
             Mul | Div | Mod => 100,
-            Exp => 120,
+            //Exp => 120, // TODO
 
             Eq | Neq | Gt | Lt | Geq | Leq => 80,
             And => 75,
@@ -162,7 +169,7 @@ impl Operator {
     pub(crate) const fn max_argument_amount(&self) -> Option<usize> {
         use crate::operator::Operator::*;
         match self {
-            Add | Sub | Mul | Div | Mod | Exp | Eq | Neq | Gt | Lt | Geq | Leq | And | Or
+            Add | Sub | Mul | Div | Mod | /* Exp TODO |*/ Eq | Neq | Gt | Lt | Geq | Leq | And | Or
             | Assign | AddAssign | SubAssign | MulAssign | DivAssign | ModAssign | ExpAssign
             | AndAssign | OrAssign => Some(2),
             Tuple | Chain => None,
@@ -317,6 +324,7 @@ impl Operator {
                     ))
                 }
             },
+            /* TODO find a solution
             Exp => {
                 expect_operator_argument_amount(arguments.len(), 2)?;
                 arguments[0].as_number()?;
@@ -326,6 +334,7 @@ impl Operator {
                     arguments[0].as_number()?.powf(arguments[1].as_number()?),
                 ))
             },
+            */
             Eq => {
                 expect_operator_argument_amount(arguments.len(), 2)?;
 
@@ -499,7 +508,7 @@ impl Operator {
                     MulAssign => Operator::Mul.eval(&arguments, context),
                     DivAssign => Operator::Div.eval(&arguments, context),
                     ModAssign => Operator::Mod.eval(&arguments, context),
-                    ExpAssign => Operator::Exp.eval(&arguments, context),
+                    //ExpAssign => Operator::Exp.eval(&arguments, context), // TODO
                     AndAssign => Operator::And.eval(&arguments, context),
                     OrAssign => Operator::Or.eval(&arguments, context),
                     _ => unreachable!(
