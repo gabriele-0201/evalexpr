@@ -192,6 +192,47 @@ impl Node {
         }
         self.operator().eval_mut(&arguments, context)
     }
+    
+    /// Evaluates the operator tree rooted at this node with the given mutable context and short
+    /// circuiting.
+    ///
+    /// Fails, if one of the operators in the expression tree fails.
+    pub fn eval_with_context_mut_and_short_circuiting<C: ContextWithMutableVariables>(
+        &self,
+        context: &mut C,
+    ) -> EvalexprResult<Value> {
+        // 
+
+        if let Operator::FunctionIdentifier { identifier: x } = self.operator() {
+            if *x == String::from("if") {
+                
+                //let mut arguments = argument.as_fixed_len_tuple(3)?;
+                if self.children().len() != 3 {
+                    return Err(EvalexprError::WrongFunctionArgumentAmount{expected: 3, actual: self.children().len()});
+                }
+
+                let if_result = self.children[0].eval_with_context_mut_and_short_circuiting(context)?;
+
+                match if_result {
+
+                    Value::Boolean(res) =>  {
+
+                        let child_to_evaluate = if res { &self.children[1] } else { &self.children[2] };
+
+                        return child_to_evaluate.eval_with_context_mut_and_short_circuiting(context);
+                    },
+                    res => return Err(EvalexprError::ExpectedBoolean{ actual: res }),
+
+                }
+            }
+        }
+
+        let mut arguments = Vec::new();
+        for child in self.children() {
+            arguments.push(child.eval_with_context_mut(context)?);
+        }
+        self.operator().eval_mut(&arguments, context)
+    }
 
     /// Evaluates the operator tree rooted at this node.
     ///

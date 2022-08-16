@@ -21,6 +21,11 @@ pub fn eval(string: &str) -> EvalexprResult<Value> {
     eval_with_context_mut(string, &mut HashMapContext::new())
 }
 
+/// New
+pub fn eval_short_circuiting(string: &str) -> EvalexprResult<Value> {
+    tree::tokens_to_operator_tree(token::tokenize(string)?)?.eval_with_context_mut_and_short_circuiting(&mut HashMapContext::new())
+}
+
 /// Evaluate the given expression string with the given context.
 ///
 /// # Examples
