@@ -4,6 +4,8 @@ use crate::{
 };
 
 #[cfg(feature = "wasm")]
+use sp_std::{ vec, vec::Vec };
+#[cfg(feature = "wasm")]
 use scale_info::prelude::string::String;
 
 /// Evaluate the given expression string.
@@ -29,7 +31,6 @@ pub fn eval_short_circuiting(string: &str) -> EvalexprResult<Value> {
 #[test]
 fn test_short_circuit_evaluation() {
     assert_eq!(eval_short_circuiting("if((1 + 2) == 3, len(\"ciao\") == 4, function_test(\"ciao\", (\"ab\", 1)))"), Ok(Value::Boolean(true)));
-    //assert_eq!(eval_short_circuiting("current_prop(\"name\", \"test\")"), Ok(Value::Boolean(true)));
 }
 
 /// Evaluate the given expression string with the given context.
@@ -331,4 +332,33 @@ pub fn eval_empty_with_context_mut<C: ContextWithMutableVariables>(
         Ok(value) => Err(EvalexprError::expected_empty(value)),
         Err(error) => Err(error),
     }
+}
+
+/// parse a stirng divided by char and return a Node with TupleType with the same strings
+pub fn eval_string_to_tuple(string: &str, divisor: char, max_tuple_length: u32) -> EvalexprResult<Node> {
+    use token::Token;
+
+    let mut new_args: Vec<Token> = vec![];
+                                                                                                                               
+    for (index, arg) in string.split(divisor).enumerate() { 
+        if index >= max_tuple_length as usize {                                                                                        
+            return Err(EvalexprError::WrongOperatorArgumentAmount{ expected: max_tuple_length as usize, actual: index });
+        }                                                                                                                      
+        new_args.push(Token::String(String::from(arg))); 
+        new_args.push(Token::Comma);                                                                                           
+    }                                                                                                                          
+
+    new_args.pop();
+    tree::tokens_to_operator_tree(new_args)
+}
+
+#[test]
+fn test_string_to_tuple() {
+    let s = "outgoing.name.prop";
+    let node = eval_string_to_tuple(s, '.', 3);
+    println!("{:#?}", node);
+
+    let s = "self";
+    let node = eval_string_to_tuple(s, '.', 3);
+    println!("{:#?}", node);
 }
