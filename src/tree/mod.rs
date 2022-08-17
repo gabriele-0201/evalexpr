@@ -201,23 +201,36 @@ impl Node {
         &self,
         context: &mut C,
     ) -> EvalexprResult<Value> {
-        // 
 
         if let Operator::FunctionIdentifier { identifier: x } = self.operator() {
             if *x == String::from("if") {
+
+                // TODO: a way to check this structure
+                // the first children seems to be a root node so go to the tuple
+                let if_child = &self.children()[0].children()[0];
+
+                #[cfg(test)]
+                println!("op: {:?}", if_child.operator());
+                #[cfg(test)]
+                println!("len: {}", if_child.children().len());
                 
-                //let mut arguments = argument.as_fixed_len_tuple(3)?;
-                if self.children().len() != 3 {
+                //if self.children().len() != 3 {
+                if if_child.children().len() != 3 {
                     return Err(EvalexprError::WrongFunctionArgumentAmount{expected: 3, actual: self.children().len()});
                 }
 
-                let if_result = self.children[0].eval_with_context_mut_and_short_circuiting(context)?;
+                //let if_result = self.children[0].eval_with_context_mut_and_short_circuiting(context)?;
+                let if_result = if_child.children()[0].eval_with_context_mut_and_short_circuiting(context)?;
+
+                #[cfg(test)]
+                println!("result first operand: {}", if_result);
 
                 match if_result {
 
                     Value::Boolean(res) =>  {
 
-                        let child_to_evaluate = if res { &self.children[1] } else { &self.children[2] };
+                        //let child_to_evaluate = if res { &self.children[1] } else { &self.children[2] };
+                        let child_to_evaluate = if res { &if_child.children()[1] } else { &if_child.children()[2] };
 
                         return child_to_evaluate.eval_with_context_mut_and_short_circuiting(context);
                     },
@@ -225,11 +238,11 @@ impl Node {
 
                 }
             }
-        }
+        } 
 
         let mut arguments = Vec::new();
         for child in self.children() {
-            arguments.push(child.eval_with_context_mut(context)?);
+            arguments.push(child.eval_with_context_mut_and_short_circuiting(context)?);
         }
         self.operator().eval_mut(&arguments, context)
     }

@@ -1,0 +1,151 @@
+
+running 1 test
+test interface::test_short_circuit_evaluation ... FAILED
+
+failures:
+
+---- interface::test_short_circuit_evaluation stdout ----
+op: RootNode
+len: 1
+Node {
+    operator: Tuple,
+    children: [
+        Node {
+            operator: RootNode,
+            children: [
+                Node {
+                    operator: Eq,
+                    children: [
+                        Node {
+                            operator: RootNode,
+                            children: [
+                                Node {
+                                    operator: Add,
+                                    children: [
+                                        Node {
+                                            operator: Const {
+                                                value: Int(
+                                                    1,
+                                                ),
+                                            },
+                                            children: [],
+                                        },
+                                        Node {
+                                            operator: Const {
+                                                value: Int(
+                                                    3,
+                                                ),
+                                            },
+                                            children: [],
+                                        },
+                                    ],
+                                },
+                            ],
+                        },
+                        Node {
+                            operator: Const {
+                                value: Int(
+                                    3,
+                                ),
+                            },
+                            children: [],
+                        },
+                    ],
+                },
+            ],
+        },
+        Node {
+            operator: RootNode,
+            children: [
+                Node {
+                    operator: Eq,
+                    children: [
+                        Node {
+                            operator: FunctionIdentifier {
+                                identifier: "len",
+                            },
+                            children: [
+                                Node {
+                                    operator: RootNode,
+                                    children: [
+                                        Node {
+                                            operator: Const {
+                                                value: String(
+                                                    "ciao",
+                                                ),
+                                            },
+                                            children: [],
+                                        },
+                                    ],
+                                },
+                            ],
+                        },
+                        Node {
+                            operator: Const {
+                                value: Int(
+                                    4,
+                                ),
+                            },
+                            children: [],
+                        },
+                    ],
+                },
+            ],
+        },
+        Node {
+            operator: RootNode,
+            children: [
+                Node {
+                    operator: Eq,
+                    children: [
+                        Node {
+                            operator: RootNode,
+                            children: [
+                                Node {
+                                    operator: Add,
+                                    children: [
+                                        Node {
+                                            operator: Const {
+                                                value: String(
+                                                    "ab",
+                                                ),
+                                            },
+                                            children: [],
+                                        },
+                                        Node {
+                                            operator: Const {
+                                                value: Int(
+                                                    2,
+                                                ),
+                                            },
+                                            children: [],
+                                        },
+                                    ],
+                                },
+                            ],
+                        },
+                        Node {
+                            operator: Const {
+                                value: Boolean(
+                                    false,
+                                ),
+                            },
+                            children: [],
+                        },
+                    ],
+                },
+            ],
+        },
+    ],
+}
+thread 'interface::test_short_circuit_evaluation' panicked at 'assertion failed: `(left == right)`
+  left: `Err(WrongFunctionArgumentAmount { expected: 3, actual: 1 })`,
+ right: `Ok(Boolean(true))`', src/interface/mod.rs:33:5
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    interface::test_short_circuit_evaluation
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 6 filtered out; finished in 0.00s
+

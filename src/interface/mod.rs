@@ -26,6 +26,11 @@ pub fn eval_short_circuiting(string: &str) -> EvalexprResult<Value> {
     tree::tokens_to_operator_tree(token::tokenize(string)?)?.eval_with_context_mut_and_short_circuiting(&mut HashMapContext::new())
 }
 
+#[test]
+fn test_short_circuit_evaluation() {
+    assert_eq!(eval_short_circuiting("if((1 + 2) == 3, len(\"ciao\") == 4, (\"ab\" + 2) == false)"), Ok(Value::Boolean(true)));
+}
+
 /// Evaluate the given expression string with the given context.
 ///
 /// # Examples
