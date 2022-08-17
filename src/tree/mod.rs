@@ -213,6 +213,11 @@ impl Node {
                 println!("op: {:?}", if_child.operator());
                 #[cfg(test)]
                 println!("len: {}", if_child.children().len());
+
+                #[cfg(test)]
+                for child in if_child.children().iter() {
+                    println!("{:#?}", child);
+                }
                 
                 //if self.children().len() != 3 {
                 if if_child.children().len() != 3 {
@@ -662,7 +667,11 @@ fn collapse_all_sequences(root_stack: &mut Vec<Node>) -> EvalexprResult<()> {
     Ok(())
 }
 
-pub(crate) fn tokens_to_operator_tree(tokens: Vec<Token>) -> EvalexprResult<Node> {
+//pub(crate) fn tokens_to_operator_tree(tokens: Vec<Token>) -> EvalexprResult<Node> {
+//TEST
+pub fn tokens_to_operator_tree(tokens: Vec<Token>) -> EvalexprResult<Node> {
+    #[cfg(test)]
+    println!("{:#?}", tokens);
     let mut root_stack = vec![Node::root_node()];
     let mut last_token_is_rightsided_value = false;
     let mut token_iter = tokens.iter().peekable();

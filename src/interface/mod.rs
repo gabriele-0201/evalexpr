@@ -28,7 +28,8 @@ pub fn eval_short_circuiting(string: &str) -> EvalexprResult<Value> {
 
 #[test]
 fn test_short_circuit_evaluation() {
-    assert_eq!(eval_short_circuiting("if((1 + 2) == 3, len(\"ciao\") == 4, (\"ab\" + 2) == false)"), Ok(Value::Boolean(true)));
+    assert_eq!(eval_short_circuiting("if((1 + 2) == 3, len(\"ciao\") == 4, function_test(\"ciao\", (\"ab\", 1)))"), Ok(Value::Boolean(true)));
+    //assert_eq!(eval_short_circuiting("current_prop(\"name\", \"test\")"), Ok(Value::Boolean(true)));
 }
 
 /// Evaluate the given expression string with the given context.
